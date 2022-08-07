@@ -37,6 +37,7 @@ RUN apk add --no-cache chromium
 WORKDIR /root
 
 COPY --from=br-build /root/package.json package.json
+COPY --from=br-build /root/config-overrides.js config-overrides.js
 COPY --from=br-build /root/node_modules /root/node_modules
 
 ENTRYPOINT ["npm", "start"]
