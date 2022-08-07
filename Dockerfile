@@ -14,7 +14,6 @@ COPY "src" "./src"
 COPY "server/src" "./server/src"
 COPY "package.json" "./package.json"
 COPY "tsconfig.json" "./tsconfig.json"
-COPY "config-overrides.json" "./config-overrides.json"
 
 RUN npm i --legacy-peer-deps .
 RUN npm i -g typescript
