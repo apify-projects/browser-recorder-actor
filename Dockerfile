@@ -8,7 +8,6 @@ ENV CHROMIUM_PATH /usr/bin/chromium-browser
 RUN apk add --no-cache chromium
 
 COPY package.json ./
-COPY package-lock.json ./
 
 RUN npm install --legacy-peer-deps
 
