@@ -4,6 +4,7 @@
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import path from 'path';
 /**
  * loads .env config to the process - allows a custom configuration for the server
  */
@@ -44,6 +45,20 @@ export const io = new Server(server);
  * {@link BrowserPool} globally exported singleton instance for managing browsers.
  */
 export const browserPool = new BrowserPool();
+
+/**
+ * For deployment
+ */
+const staticPath = path.resolve(__dirname, "../../build/static");
+const buildPath = path.resolve(__dirname, "../../build");
+const indexPath = path.resolve(__dirname, "../../build/index.html");
+
+app.use("/", express.static(buildPath));
+app.use("/static", express.static(staticPath));
+
+app.all("/", (req, res) => {
+    res.sendFile(indexPath);
+});
 
 /**
  * API routes for the server.

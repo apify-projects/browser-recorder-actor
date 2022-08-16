@@ -8,7 +8,7 @@ import { deleteFile, readFile, readFiles, saveFile } from "../workflow-managemen
 import { createRemoteBrowserForRun, destroyRemoteBrowser } from "../browser-management/controller";
 import { chromium } from "playwright";
 import { browserPool } from "../server";
-import fs from "fs";
+import * as fs from "fs";
 import { uuid } from "uuidv4";
 
 export const router = Router();
@@ -29,7 +29,8 @@ router.get('/recordings', async (req, res) => {
     const data = await readFiles('./../storage/recordings/');
     return res.send(data);
   } catch (e) {
-    logger.log('info', 'Error while reading recordings');
+    const { message } = e as Error;
+    logger.log('info', `Error while reading recordings - ${message}`);
     return res.send(null);
   }
 });

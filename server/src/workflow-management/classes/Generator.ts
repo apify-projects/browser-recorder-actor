@@ -13,7 +13,7 @@ import {
 import { CustomActions } from "../../../../src/shared/types";
 import { workflow } from "../../routes";
 import { saveFile } from "../storage";
-import fs from "fs";
+import * as fs from "fs";
 import { getBestSelectorForAction } from "../utils";
 import { browserPool } from "../../server";
 

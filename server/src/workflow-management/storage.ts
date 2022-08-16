@@ -2,7 +2,7 @@
  * A group of functions for storing recordings on the file system.
  * Functions are asynchronous to unload the server from heavy file system operations.
  */
-import fs from 'fs';
+import * as fs from 'fs';
 import * as path from "path";
 
 /**

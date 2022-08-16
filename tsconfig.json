@@ -18,11 +18,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noEmitHelpers": false,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "outDir": "./build"
   },
   "include": [
-    "src"
+    "src/**/*",
+    "server/src/**/*"
   ]
 }
