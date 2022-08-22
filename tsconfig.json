@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "target": "es6",
     "lib": [
       "dom",
       "dom.iterable",
@@ -19,12 +18,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmitHelpers": false,
-    "noEmit": true,
     "jsx": "preserve",
-    "outDir": "./build"
+    "outDir": "./out",
   },
   "include": [
-    "src/**/*",
     "server/src/**/*"
   ]
 }

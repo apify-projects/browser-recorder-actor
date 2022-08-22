@@ -34,11 +34,11 @@
     "react-scripts": "5.0.1",
     "react-simple-code-editor": "^0.11.2",
     "react-transition-group": "^4.4.2",
+    "rimraf": "^3.0.2",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1",
     "styled-components": "^5.3.3",
     "typedoc": "^0.23.8",
-    "typescript": "^4.6.3",
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.12",
     "web-vitals": "^2.1.4",
@@ -48,12 +48,13 @@
     "start": "node server/src/server.js",
     "start:dev": "concurrently -k \"npm run server:dev\" \"npm run client\"",
     "server:dev": "nodemon --exec ts-node --project tsconfig.json server/src/server.ts",
-    "server:build": "tsc --downlevelIteration --project tsconfig.json",
+    "server:build": "tsc -p tsconfig.json",
     "client": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build:front": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
-    "lint": "./node_modules/.bin/eslint ."
+    "lint": "./node_modules/.bin/eslint .",
+    "build": "rimraf build && rimraf out && npm run build:front && npm run server:build"
   },
   "eslintConfig": {
     "extends": [
@@ -84,6 +85,7 @@
     "concurrently": "^7.0.0",
     "nodemon": "^2.0.15",
     "react-app-rewired": "^2.2.1",
-    "ts-node": "^10.4.0"
+    "ts-node": "^10.4.0",
+    "typescript": "^4.6.3"
   }
 }
