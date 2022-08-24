@@ -18,7 +18,7 @@ export interface CreateRunResponse {
   runId: string;
 }
 
-export const SERVER_PORT = process.env.DOCKER ? process.env.APIFY_CONTAINER_URL : 'http://localhost:8080';
+export const SERVER_PORT = process.env.REACT_APP_DOCKER ? process.env.APIFY_CONTAINER_URL : 'http://localhost:8080';
 
 export const MainPage = ({ handleEditRecording }: MainPageProps) => {
 
