@@ -2,10 +2,11 @@ import { default as axios } from "axios";
 import { WorkflowFile } from "@wbr-project/wbr-interpret";
 import { RunSettings } from "../components/molecules/RunSettings";
 import { CreateRunResponse } from "../pages/MainPage";
+import {SERVER_PORT} from "../pages/MainPage";
 
 export const getStoredRecordings = async (): Promise<string[] | null> => {
   try {
-    const response = await axios.get('http://localhost:8080/storage/recordings');
+    const response = await axios.get(`${SERVER_PORT}/storage/recordings`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -19,7 +20,7 @@ export const getStoredRecordings = async (): Promise<string[] | null> => {
 
 export const getStoredRuns = async (): Promise<string[] | null> => {
   try {
-    const response = await axios.get('http://localhost:8080/storage/runs');
+    const response = await axios.get(`${SERVER_PORT}/storage/runs`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -33,7 +34,7 @@ export const getStoredRuns = async (): Promise<string[] | null> => {
 
 export const deleteRecordingFromStorage = async (fileName: string): Promise<boolean> => {
   try {
-    const response = await axios.delete(`http://localhost:8080/storage/recordings/${fileName}`);
+    const response = await axios.delete(`${SERVER_PORT}/storage/recordings/${fileName}`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -47,7 +48,7 @@ export const deleteRecordingFromStorage = async (fileName: string): Promise<bool
 
 export const deleteRunFromStorage = async (fileName: string): Promise<boolean> => {
   try {
-    const response = await axios.delete(`http://localhost:8080/storage/runs/${fileName}`);
+    const response = await axios.delete(`${SERVER_PORT}/storage/runs/${fileName}`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -61,7 +62,7 @@ export const deleteRunFromStorage = async (fileName: string): Promise<boolean> =
 
 export const editRecordingFromStorage = async (browserId: string, fileName: string): Promise<WorkflowFile | null> => {
   try {
-    const response = await axios.put(`http://localhost:8080/workflow/${browserId}/${fileName}`);
+    const response = await axios.put(`${SERVER_PORT}/workflow/${browserId}/${fileName}`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -76,7 +77,7 @@ export const editRecordingFromStorage = async (browserId: string, fileName: stri
 export const createRunForStoredRecording = async (fileName: string, settings: RunSettings): Promise<CreateRunResponse> => {
   try {
     const response = await axios.put(
-      `http://localhost:8080/storage/runs/${fileName}`,
+      `${SERVER_PORT}/storage/runs/${fileName}`,
       {...settings});
     if (response.status === 200) {
       return response.data;
@@ -91,7 +92,7 @@ export const createRunForStoredRecording = async (fileName: string, settings: Ru
 
 export const interpretStoredRecording = async (fileName: string, runId: string): Promise<boolean> => {
   try {
-    const response = await axios.post(`http://localhost:8080/storage/runs/run/${fileName}/${runId}`);
+    const response = await axios.post(`${SERVER_PORT}/storage/runs/run/${fileName}/${runId}`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -105,7 +106,7 @@ export const interpretStoredRecording = async (fileName: string, runId: string):
 
 export const notifyAboutAbort = async (fileName: string, runId:string): Promise<boolean> => {
   try {
-    const response = await axios.post(`http://localhost:8080/storage/runs/abort/${fileName}/${runId}`);
+    const response = await axios.post(`${SERVER_PORT}/storage/runs/abort/${fileName}/${runId}`);
     if (response.status === 200) {
       return response.data;
     } else {

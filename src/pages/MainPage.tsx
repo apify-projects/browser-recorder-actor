@@ -18,6 +18,8 @@ export interface CreateRunResponse {
   runId: string;
 }
 
+export const SERVER_PORT = process.env.DOCKER ? process.env.APIFY_CONTAINER_URL : 'http://localhost:8080';
+
 export const MainPage = ({ handleEditRecording }: MainPageProps) => {
 
   const [content, setContent] = React.useState('recordings');
@@ -75,7 +77,7 @@ export const MainPage = ({ handleEditRecording }: MainPageProps) => {
     createRunForStoredRecording(runningRecordingName, settings).then(({browserId, runId}: CreateRunResponse) => {
       setIds({browserId, runId});
       const socket =
-        io(`http://localhost:8080/${browserId}`, {
+        io(`${SERVER_PORT}/${browserId}`, {
           transports: ["websocket"],
           rejectUnauthorized: false
         });
