@@ -85,7 +85,9 @@ export class RemoteBrowser {
      * @returns {Promise<void>}
      */
     public initialize = async(options: RemoteBrowserOptions) : Promise<void> => {
-        this.browser = <Browser>(await options.browser.launch(options.launchOptions));
+        this.browser = <Browser>(await options.browser.launch(process.env.DOCKER
+          ? { executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox', '--disable-gpu'], ...options.launchOptions }
+          : options.launchOptions));
         const context = await this.browser.newContext();
         this.currentPage = await context.newPage();
         this.client = await this.currentPage.context().newCDPSession(this.currentPage);
