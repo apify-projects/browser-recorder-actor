@@ -11,6 +11,7 @@ import { BreakpointButton } from "../atoms/buttons/BreakpointButton";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import styled from "styled-components";
 import { LoadingButton } from "@mui/lab";
+import { KeyboardDoubleArrowUp } from '@mui/icons-material';
 
 type WhereWhatPair = WorkflowFile["workflow"][number];
 
@@ -78,7 +79,10 @@ export const Pair: FC<PairProps> = (
   return (
     <PairWrapper isActive={isActive}>
       <Stack direction="row">
-        <div style={{display: 'flex', maxWidth:'20px', alignItems:'center', justifyContent: 'center', }}>
+        <div style={{display: 'flex', alignItems:'center', justifyContent: 'center'}}>
+        {
+          ('$after' in pair.where ? <span style={{position: 'relative'}}><KeyboardDoubleArrowUp style={{position: 'absolute', left: '-15px', top: '5px'}}/></span> : <></>)
+        }
           {isActive ? <LoadingButton loading variant="text"/>
             : breakpoint ? <BreakpointButton changeColor={true} handleClick={handleBreakpointClick}/>
               : <BreakpointButton handleClick={handleBreakpointClick}/>
