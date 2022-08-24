@@ -1,6 +1,7 @@
 /**
  * HTTP express server for the browser recorder client application.
  */
+import Apify from 'apify';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
@@ -20,7 +21,9 @@ import {Server} from "socket.io";
  * Creates a new express server instance.
  * @type {express.Express}
  */
+
 const app = express();
+const port = process.env.APIFY_CONTAINER_PORT;
 /**
  * Enabling cors for communication with client on a different port/domain.
  */
@@ -71,4 +74,4 @@ app.get('/', function (req, res) {
     return res.send('Welcome to the BR recorder server :-)');
 });
 
-server.listen(SERVER_PORT, () => logger.log('info',`Server listening on port ${SERVER_PORT}`));
+server.listen(port, () => console.log(`Web server is listening and can be accessed at ${process.env.APIFY_CONTAINER_URL}!`));
