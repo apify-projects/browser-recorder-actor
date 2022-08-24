@@ -26,7 +26,6 @@ WORKDIR /app
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD 1
 
 ENV DOCKER 1
-ENV REACT_APP_DOCKER 1
 ENV CHROMIUM_PATH /usr/bin/chromium-browser
 
 RUN apk add --no-cache chromium
