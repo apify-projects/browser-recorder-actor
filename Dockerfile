@@ -34,7 +34,7 @@ COPY --from=first_layer /app/build /app/build
 COPY --from=first_layer /app/out /app
 COPY --from=first_layer /app/package.json package.json
 COPY --from=first_layer /app/public /app/public
+COPY --from=first_layer /app/node_modules /app/node_modules
 COPY --from=first_layer /app/config-overrides.js /app/config-overrides.js
-RUN npm install --legacy-peer-deps
 
 CMD ["npm", "start"]
