@@ -6,7 +6,7 @@ import { Runs } from "../components/organisms/Runs";
 import { useGlobalInfoStore } from "../context/globalInfo";
 import { createRunForStoredRecording, interpretStoredRecording, notifyAboutAbort } from "../api/storage";
 import { io, Socket } from "socket.io-client";
-import { stopRecording } from "../api/recording";
+import { getServerUrl, stopRecording } from "../api/recording";
 import { RunSettings } from "../components/molecules/RunSettings";
 
 interface MainPageProps {
@@ -17,8 +17,6 @@ export interface CreateRunResponse {
   browserId: string;
   runId: string;
 }
-
-export const SERVER_PORT = process.env.APIFY_CONTAINER_URL || 'http://localhost:8080';
 
 export const MainPage = ({ handleEditRecording }: MainPageProps) => {
 
@@ -74,10 +72,11 @@ export const MainPage = ({ handleEditRecording }: MainPageProps) => {
   }, [currentInterpretationLog])
 
   const handleRunRecording = useCallback((settings: RunSettings) => {
-    createRunForStoredRecording(runningRecordingName, settings).then(({browserId, runId}: CreateRunResponse) => {
+    createRunForStoredRecording(runningRecordingName, settings).then(async({browserId, runId}: CreateRunResponse) => {
       setIds({browserId, runId});
+      const SERVER_ENDPOINT = await getServerUrl() || 'http://localhost:8080';
       const socket =
-        io(`${SERVER_PORT}/${browserId}`, {
+        io(`${SERVER_ENDPOINT}/${browserId}`, {
           transports: ["websocket"],
           rejectUnauthorized: false
         });

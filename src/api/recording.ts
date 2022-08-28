@@ -1,12 +1,23 @@
 import { AxiosResponse } from "axios";
-import {SERVER_PORT} from "../pages/MainPage";
 
 const axios = require('axios').default;
 
+export const getServerUrl = async() : Promise<string> => {
+  try {
+    const response = await axios.get(`/record/serverUrl`)
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Couldn\'t start recording');
+    }
+  } catch(error: any) {
+    return '';
+  }
+};
 
 export const startRecording = async() : Promise<string> => {
   try {
-    const response = await axios.get(`${SERVER_PORT}/record/start`)
+    const response = await axios.get(`/record/start`)
     if (response.status === 200) {
         return response.data;
     } else {
@@ -18,7 +29,7 @@ export const startRecording = async() : Promise<string> => {
 };
 
 export const stopRecording = async (id: string): Promise<void> => {
-    await axios.get(`${SERVER_PORT}/record/stop/${id}`)
+    await axios.get(`/record/stop/${id}`)
         .then((response : AxiosResponse<boolean>)  => {
         })
         .catch((error: any) => {
@@ -27,7 +38,7 @@ export const stopRecording = async (id: string): Promise<void> => {
 
 export const getActiveBrowserId = async(): Promise<string> => {
     try {
-        const response = await axios.get(`${SERVER_PORT}/record/active`);
+        const response = await axios.get(`/record/active`);
         if (response.status === 200) {
             return response.data;
         } else {
@@ -40,7 +51,7 @@ export const getActiveBrowserId = async(): Promise<string> => {
 
 export const interpretCurrentRecording = async(): Promise<boolean> => {
     try {
-        const response = await axios.get(`${SERVER_PORT}/record/interpret`);
+        const response = await axios.get(`/record/interpret`);
         if (response.status === 200) {
             return true;
         } else {
@@ -54,7 +65,7 @@ export const interpretCurrentRecording = async(): Promise<boolean> => {
 
 export const stopCurrentInterpretation = async(): Promise<void> => {
   try {
-    const response = await axios.get(`${SERVER_PORT}/record/interpret/stop`);
+    const response = await axios.get(`/record/interpret/stop`);
     if (response.status === 200) {
       return;
     } else {
@@ -67,7 +78,7 @@ export const stopCurrentInterpretation = async(): Promise<void> => {
 
 export const getCurrentUrl = async (): Promise<string | null> => {
   try {
-    const response = await axios.get(`${SERVER_PORT}/record/active/url`);
+    const response = await axios.get(`/record/active/url`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -81,7 +92,7 @@ export const getCurrentUrl = async (): Promise<string | null> => {
 
 export const getCurrentTabs = async (): Promise<string[] | null> => {
   try {
-    const response = await axios.get(`${SERVER_PORT}/record/active/tabs`);
+    const response = await axios.get(`/record/active/tabs`);
     if (response.status === 200) {
       return response.data;
     } else {

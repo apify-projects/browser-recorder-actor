@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-
-const SERVER_ENDPOINT = process.env.APIFY_CONTAINER_URL || 'http://localhost:8080';
+import { getServerUrl } from "../api/recording";
 
 interface SocketState {
   socket: Socket | null;
@@ -23,7 +22,8 @@ export const SocketProvider = ({ children }: { children: JSX.Element }) => {
   const [socket, setSocket] = useState<Socket | null>(socketStore.socket);
   const [id, setActiveId] = useState<string>(socketStore.id);
 
-  const setId = useCallback((id: string) => {
+  const setId = useCallback(async(id: string) => {
+    const SERVER_ENDPOINT = await getServerUrl() || 'http://localhost:8080';
     // the socket client connection is recomputed whenever id changes -> the new browser has been initialized
     const socket =
       io(`${SERVER_ENDPOINT}/${id}`, {

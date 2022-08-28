@@ -24,6 +24,10 @@ router.all('/', (req, res, next) => {
     next() // pass control to the next handler
 })
 
+router.get('/serverUrl', (req, res) => {
+    return res.send(process.env.APIFY_CONTAINER_URL);
+});
+
 /**
  * GET endpoint for starting the remote browser recording session.
  * returns session's id

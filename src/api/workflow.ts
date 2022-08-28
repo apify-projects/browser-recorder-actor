@@ -1,12 +1,11 @@
 import { WhereWhatPair, WorkflowFile } from "@wbr-project/wbr-interpret";
 import { emptyWorkflow } from "../shared/constants";
-import { SERVER_PORT } from "../pages/MainPage";
 
 const axios = require('axios').default;
 
 export const getActiveWorkflow = async(id: string) : Promise<WorkflowFile> => {
   try {
-    const response = await axios.get(`${SERVER_PORT}/workflow/${id}`)
+    const response = await axios.get(`/workflow/${id}`)
     if (response.status === 200) {
       return response.data;
     } else {
@@ -20,7 +19,7 @@ export const getActiveWorkflow = async(id: string) : Promise<WorkflowFile> => {
 
 export const getParamsOfActiveWorkflow = async(id: string) : Promise<string[]|null> => {
   try {
-    const response = await axios.get(`${SERVER_PORT}/workflow/params/${id}`)
+    const response = await axios.get(`/workflow/params/${id}`)
     if (response.status === 200) {
       return response.data;
     } else {
@@ -34,7 +33,7 @@ export const getParamsOfActiveWorkflow = async(id: string) : Promise<string[]|nu
 
 export const deletePair = async(index: number): Promise<WorkflowFile> => {
   try {
-   const response = await axios.delete(`${SERVER_PORT}/workflow/pair/${index}`);
+   const response = await axios.delete(`/workflow/pair/${index}`);
     if (response.status === 200) {
       return response.data;
     } else {
@@ -48,7 +47,7 @@ export const deletePair = async(index: number): Promise<WorkflowFile> => {
 
 export const AddPair = async(index: number, pair: WhereWhatPair): Promise<WorkflowFile> => {
   try {
-    const response = await axios.post(`${SERVER_PORT}/workflow/pair/${index}`, {
+    const response = await axios.post(`/workflow/pair/${index}`, {
       pair,
     }, {headers: {'Content-Type': 'application/json'}});
     if (response.status === 200) {
@@ -64,7 +63,7 @@ export const AddPair = async(index: number, pair: WhereWhatPair): Promise<Workfl
 
 export const UpdatePair = async(index: number, pair: WhereWhatPair): Promise<WorkflowFile> => {
   try {
-    const response = await axios.put(`${SERVER_PORT}/workflow/pair/${index}`, {
+    const response = await axios.put(`/workflow/pair/${index}`, {
       pair,
     }, {headers: {'Content-Type': 'application/json'}});
     if (response.status === 200) {
