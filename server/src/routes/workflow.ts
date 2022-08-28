@@ -5,7 +5,7 @@
 import { Router } from 'express';
 import logger from "../logger";
 import { browserPool } from "../server";
-import { readFile } from "../workflow-management/storage";
+import { readKey } from "../workflow-management/storage";
 
 export const router = Router();
 
@@ -106,9 +106,8 @@ router.put('/:browserId/:fileName', async (req, res) => {
     const browser = browserPool.getRemoteBrowser(req.params.browserId);
     logger.log('debug', `Updating workflow file`);
     if (browser && browser.generator) {
-      const recording = await readFile(`./../storage/recordings/${req.params.fileName}.waw.json`)
-      const parsedRecording = JSON.parse(recording);
-      if (parsedRecording.recording) {
+      const parsedRecording = await readKey(`${req.params.fileName}.waw.json`)
+      if (parsedRecording && parsedRecording.recording) {
         browser.generator?.updateWorkflowFile(parsedRecording.recording, parsedRecording.recording_meta);
         const workflowFile = browser.generator?.getWorkflowFile();
         return res.send(workflowFile);

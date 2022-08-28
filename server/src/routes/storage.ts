@@ -4,11 +4,10 @@
 
 import { Router } from 'express';
 import logger from "../logger";
-import { deleteFile, readFile, readFiles, saveFile } from "../workflow-management/storage";
+import { deleteKey, readKey, readKeys, saveKey } from "../workflow-management/storage";
 import { createRemoteBrowserForRun, destroyRemoteBrowser } from "../browser-management/controller";
 import { chromium } from "playwright";
 import { browserPool } from "../server";
-import * as fs from "fs";
 import { uuid } from "uuidv4";
 
 export const router = Router();
@@ -26,7 +25,7 @@ router.all('/', (req, res, next) => {
  */
 router.get('/recordings', async (req, res) => {
   try {
-    const data = await readFiles('./../storage/recordings/');
+    const data = await readKeys('recordings');
     return res.send(data);
   } catch (e) {
     const { message } = e as Error;
@@ -40,7 +39,7 @@ router.get('/recordings', async (req, res) => {
  */
 router.delete('/recordings/:fileName', async (req, res) => {
   try {
-    await deleteFile(`./../storage/recordings/${req.params.fileName}.waw.json`);
+    await deleteKey(`${req.params.fileName}.waw.json`);
     return res.send(true);
   } catch (e) {
     const {message} = e as Error;
@@ -54,7 +53,7 @@ router.delete('/recordings/:fileName', async (req, res) => {
  */
 router.get('/runs', async (req, res) => {
   try {
-    const data = await readFiles('./../storage/runs/');
+    const data = await readKeys('runs');
     return res.send(data);
   } catch (e) {
     logger.log('info', 'Error while reading runs');
@@ -67,7 +66,7 @@ router.get('/runs', async (req, res) => {
  */
 router.delete('/runs/:fileName', async (req, res) => {
   try {
-    await deleteFile(`./../storage/runs/${req.params.fileName}.json`);
+    await deleteKey(`${req.params.fileName}.json`);
     return res.send(true);
   } catch (e) {
     const {message} = e as Error;
@@ -101,10 +100,9 @@ router.put('/runs/:fileName', async (req, res) => {
       log: '',
       runId,
     };
-    fs.mkdirSync('../storage/runs', { recursive: true })
-    await saveFile(
-      `../storage/runs/${req.params.fileName}_${runId}.json`,
-      JSON.stringify({ ...run_meta }, null, 2)
+    await saveKey(
+      `${req.params.fileName}_${runId}.json`,
+      { ...run_meta }
     );
     logger.log('debug', `Created run with name: ${req.params.fileName}.json`);
     return res.send({
@@ -124,8 +122,7 @@ router.put('/runs/:fileName', async (req, res) => {
 router.get('/runs/run/:fileName/:runId', async (req, res) => {
   try {
     // read the run from storage
-    const run = await readFile(`./../storage/runs/${req.params.fileName}_${req.params.runId}.json`)
-    const parsedRun = JSON.parse(run);
+    const parsedRun = await readKey(`${req.params.fileName}_${req.params.runId}.json`)
     return res.send(parsedRun);
   } catch (e) {
     const { message } = e as Error;
@@ -140,13 +137,12 @@ router.get('/runs/run/:fileName/:runId', async (req, res) => {
 router.post('/runs/run/:fileName/:runId', async (req, res) => {
   try {
     // read the recording from storage
-    const recording = await readFile(`./../storage/recordings/${req.params.fileName}.waw.json`)
-    const parsedRecording = JSON.parse(recording);
+    const parsedRecording = await readKey(`${req.params.fileName}.waw.json`)
     // read the run from storage
-    const run = await readFile(`./../storage/runs/${req.params.fileName}_${req.params.runId}.json`)
-    const parsedRun = JSON.parse(run);
+    const parsedRun = await readKey(`${req.params.fileName}_${req.params.runId}.json`)
 
     // interpret the run in active browser
+    if (parsedRecording && parsedRun) {
     const browser = browserPool.getRemoteBrowser(parsedRun.browserId);
     const currentPage = browser?.getCurrentPage();
     if (browser && currentPage) {
@@ -156,32 +152,33 @@ router.post('/runs/run/:fileName/:runId', async (req, res) => {
       const durString = (() => {
         if (duration < 60) {
           return `${duration} s`;
-        }
-        else {
+        } else {
           const minAndS = (duration / 60).toString().split('.');
           return `${minAndS[0]} m ${minAndS[1]} s`;
         }
       })();
       await destroyRemoteBrowser(parsedRun.browserId);
-        const run_meta = {
-          ...parsedRun,
-          status: interpretationInfo.result,
-          finishedAt: new Date().toLocaleString(),
-          duration: durString,
-          browserId: null,
-          log: interpretationInfo.log.join('\n'),
-          serializableOutput: interpretationInfo.serializableOutput,
-          binaryOutput: interpretationInfo.binaryOutput,
-        };
-        fs.mkdirSync('../storage/runs', { recursive: true })
-        await saveFile(
-          `../storage/runs/${parsedRun.name}_${req.params.runId}.json`,
-          JSON.stringify(run_meta, null, 2)
-        );
-        return res.send(true);
-      } else {
-        throw new Error('Could not destroy browser');
-      }
+      const run_meta = {
+        ...parsedRun,
+        status: interpretationInfo.result,
+        finishedAt: new Date().toLocaleString(),
+        duration: durString,
+        browserId: null,
+        log: interpretationInfo.log.join('\n'),
+        serializableOutput: interpretationInfo.serializableOutput,
+        binaryOutput: interpretationInfo.binaryOutput,
+      };
+      await saveKey(
+        `${parsedRun.name}_${req.params.runId}.json`,
+        run_meta
+      );
+      return res.send(true);
+    } else {
+      throw new Error('Could not destroy browser');
+    }
+  } else {
+      throw new Error('Could not read run or recording');
+    }
   } catch (e) {
     const {message} = e as Error;
     logger.log('info', `Error while running a recording with name: ${req.params.fileName}_${req.params.runId}.json`);
@@ -195,10 +192,10 @@ router.post('/runs/run/:fileName/:runId', async (req, res) => {
 router.post('/runs/abort/:fileName/:runId', async (req, res) => {
   try {
     // read the run from storage
-    const run = await readFile(`./../storage/runs/${req.params.fileName}_${req.params.runId}.json`)
-    const parsedRun = JSON.parse(run);
+    const parsedRun = await readKey(`${req.params.fileName}_${req.params.runId}.json`)
 
     //get current log
+    if (parsedRun) {
     const browser = browserPool.getRemoteBrowser(parsedRun.browserId);
     const currentLog = browser?.interpreter.debugMessages.join('/n');
     const serializableOutput = browser?.interpreter.serializableData.reduce((reducedObject, item, index) => {
@@ -222,12 +219,12 @@ router.post('/runs/abort/:fileName/:runId', async (req, res) => {
       log: currentLog,
     };
 
-    fs.mkdirSync('../storage/runs', { recursive: true })
-    await saveFile(
-      `../storage/runs/${parsedRun.name}_${req.params.runId}.json`,
-      JSON.stringify({ ...run_meta, serializableOutput, binaryOutput }, null, 2)
+    await saveKey(
+      `${parsedRun.name}_${req.params.runId}.json`,
+      { ...run_meta, serializableOutput, binaryOutput }
     );
     return res.send(true);
+  }
   } catch (e) {
     const {message} = e as Error;
     logger.log('info', `Error while running a recording with name: ${req.params.fileName}_${req.params.runId}.json`);

@@ -2,62 +2,37 @@
  * A group of functions for storing recordings on the file system.
  * Functions are asynchronous to unload the server from heavy file system operations.
  */
-import * as fs from 'fs';
-import * as path from "path";
+import { Actor } from 'apify';
 
 /**
- * Reads a file from path and returns its content as a string.
- * @param path The path to the file.
+ * Reads a key from the Key-Value store and returns its content.
+ * @param key The key that should be opened.
  * @returns {Promise<string>}
  * @category WorkflowManagement-Storage
  */
-export const readFile = (path: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf8', (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
+export const readKey = (key: string): Promise<null|Record<string, any>> => {
+    return Actor.getValue(key);
 };
 
 /**
- * Writes a string to a file. If the file already exists, it is overwritten.
- * @param path The path to the file.
- * @param data The data to write to the file.
+ * Writes a string to a Key-Value store. If the key already exists, it is overwritten.
+ * @param key The key.
+ * @param data The data to write to the storage.
  * @returns {Promise<void>}
  * @category WorkflowManagement-Storage
  */
-export const saveFile = (path: string, data: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(path, data, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
+export const saveKey = (key: string, data: Record<string, unknown>): Promise<void> => {
+  return Actor.setValue(key, data);
 };
 
 /**
- * Deletes a file from the file system.
- * @param path The path to the file.
+ * Deletes a record from the key-Value store.
+ * @param key The key identifier of the record.
  * @returns {Promise<void>}
  * @category WorkflowManagement-Storage
  */
-export const deleteFile = (path: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    fs.unlink(path, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
+export const deleteKey = (key: string): Promise<void> => {
+  return Actor.setValue(key, null);
 };
 
 /**
@@ -82,29 +57,30 @@ function promiseAllP(items: any, block: any) {
 }
 
 /**
- * Reads all files from a directory and returns an array of their contents.
- * @param dirname The path to the directory.
+ * Reads all records from a default Key-Value store and returns an array of their contents.
  * @category WorkflowManagement-Storage
  * @returns {Promise<string[]>}
  */
-export const readFiles = (dirname: string): Promise<string[]> => {
+export const readKeys = async(type: 'recordings'|'runs'): Promise<string[]> => {
+  const client = Actor.newClient();
+  const defaultStore = await Actor.openKeyValueStore();
+  const keyValueStoreClient = client.keyValueStore(defaultStore.id)
+  const listKeysResult = await keyValueStoreClient.listKeys()
+  const keys = type === 'recordings' ? listKeysResult.items.map((item) => {
+    if (item.key.includes('waw')) {
+      return item.key;
+    }
+  }) : listKeysResult.items.map((item) => {
+    if (!item.key.includes('waw')) {
+      return item.key;
+    }
+  });
   return new Promise((resolve, reject) => {
-    fs.readdir(dirname, function(err, filenames) {
-      if (err) return reject(err);
-      promiseAllP(filenames.filter((filename: string) => !filename.startsWith('.')),
-        (filename: string, index : number, resolve: any, reject: any) =>  {
-          fs.readFile(path.resolve(dirname, filename), 'utf-8', function(err, content) {
-            if (err) return reject(err);
-            return resolve(content);
-          });
-        })
-        .then(results => {
-          return resolve(results);
-        })
-        .catch(error => {
-          return reject(error);
-        });
-    });
+    promiseAllP(keys, (key: string) => readKey(key)).then(results => {
+        return resolve(results);
+      }).catch(error => {
+        return reject(error);
+      });
   });
 }
 

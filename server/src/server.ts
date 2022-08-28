@@ -5,6 +5,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import path from 'path';
+import { Actor } from 'apify';
 /**
  * loads .env config to the process - allows a custom configuration for the server
  */
@@ -13,6 +14,11 @@ import 'dotenv/config';
 import { record, workflow, storage } from './routes';
 import { BrowserPool } from "./browser-management/classes/BrowserPool";
 import { Server } from "socket.io";
+
+/**
+ * Initialize the actor for Apify platform usage.
+ */
+(async() => await Actor.init())();
 
 /**
  * Creates a new express server instance.

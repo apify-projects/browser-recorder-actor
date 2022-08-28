@@ -12,7 +12,7 @@ import {
 } from "../selector";
 import { CustomActions } from "../../../../src/shared/types";
 import { workflow } from "../../routes";
-import { saveFile } from "../storage";
+import { saveKey } from "../storage";
 import * as fs from "fs";
 import { getBestSelectorForAction } from "../utils";
 import { browserPool } from "../../server";
@@ -434,10 +434,9 @@ export class WorkflowGenerator {
         update_date: new Date().toLocaleString(),
         params: this.getParams() || [],
       }
-      fs.mkdirSync('../storage/recordings', { recursive: true })
-      await saveFile(
-        `../storage/recordings/${fileName}.waw.json`,
-        JSON.stringify({ recording_meta: this.recordingMeta, recording }, null, 2)
+      await saveKey(
+        `${fileName}.waw.json`,
+        { recording_meta: this.recordingMeta, recording }
       );
     }
      catch (e) {
