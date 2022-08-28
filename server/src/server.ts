@@ -12,7 +12,7 @@ import 'dotenv/config';
 
 import { record, workflow, storage } from './routes';
 import { BrowserPool } from "./browser-management/classes/BrowserPool";
-import {Server} from "socket.io";
+import { Server } from "socket.io";
 
 /**
  * Creates a new express server instance.
@@ -20,7 +20,7 @@ import {Server} from "socket.io";
  */
 
 const app = express();
-const port = process.env.APIFY_CONTAINER_PORT;
+const port = process.env.DOCKER ? process.env.APIFY_CONTAINER_PORT : '8080';
 /**
  * Enabling cors for communication with client on a different port/domain.
  */
@@ -67,8 +67,5 @@ app.use('/record', record);
 app.use('/workflow', workflow);
 app.use('/storage', storage);
 
-app.get('/', function (req, res) {
-    return res.send('Welcome to the BR recorder server :-)');
-});
-
-server.listen(port, () => console.log(`Web server is listening and can be accessed at ${process.env.APIFY_CONTAINER_URL}!`));
+server.listen(port, () => console.log(`Web server is listening and can be accessed 
+at ${process.env.APIFY_CONTAINER_URL}! Port: ${port}`));

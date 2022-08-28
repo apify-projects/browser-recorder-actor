@@ -6,7 +6,7 @@ import {SERVER_PORT} from "../pages/MainPage";
 
 export const getStoredRecordings = async (): Promise<string[] | null> => {
   try {
-    const response = await axios.get(`${SERVER_PORT}/storage/recordings`);
+    const response = await axios.get(`/storage/recordings`);
     if (response.status === 200) {
       return response.data;
     } else {
