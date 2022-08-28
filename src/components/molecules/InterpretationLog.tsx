@@ -4,7 +4,12 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Highlight from 'react-highlight'
+//@ts-ignore
+import Prism from "prismjs/components/prism-core.min.js";
+import "prismjs/components/prism-markup.min.js";
+import "prismjs/components/prism-clike.min.js";
+import "prismjs/components/prism-markup-templating.min.js";
+import "prismjs/components/prism-log.min.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSocketStore } from "../../context/socket";
 
@@ -85,9 +90,7 @@ export const InterpretationLog = () => {
           boxSizing: 'border-box',
         }}>
           <div>
-            <Highlight className="javascript">
-              {log}
-            </Highlight>
+            <pre><code>{Prism.highlight(log, Prism.languages.log)}</code></pre>
             <div style={{ float:"left", clear: "both" }}
                  ref={logEndRef}/>
           </div>

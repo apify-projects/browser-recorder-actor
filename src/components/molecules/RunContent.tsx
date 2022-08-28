@@ -1,5 +1,6 @@
 import { Box, Tabs, Typography, Tab } from "@mui/material";
-import Highlight from "react-highlight";
+//@ts-ignore
+import { highlight, languages } from 'prismjs/components/prism-core';
 import Button from "@mui/material/Button";
 import * as React from "react";
 import { Data } from "./RunsTable";
@@ -46,9 +47,7 @@ export const RunContent = ({row, currentLog, interpretationInProgress, logEndRef
           maxHeight: '450px',
         }}>
           <div>
-            <Highlight className="javascript">
-              {interpretationInProgress ? currentLog : row.log}
-            </Highlight>
+              {interpretationInProgress ? highlight(currentLog, languages.js) : highlight(row.log, languages.js)}
             <div style={{ float:"left", clear: "both" }}
                  ref={logEndRef}/>
           </div>
