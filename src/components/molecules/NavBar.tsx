@@ -7,6 +7,7 @@ import { RecordingIcon } from "../atoms/RecorderIcon";
 import { SaveRecording } from "./SaveRecording";
 import { Circle } from "@mui/icons-material";
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import { Actor } from "apify";
 
 interface NavBarProps {
   newRecording: () => void;
@@ -35,6 +36,10 @@ export const NavBar = ({newRecording, recordingName, isRecording}:NavBarProps) =
     }
     newRecording();
     notify('info', 'New Recording started');
+  }
+
+  const handleExitRecorder = async () => {
+    await Actor.exit();
   }
 
   return (
@@ -90,6 +95,28 @@ export const NavBar = ({newRecording, recordingName, isRecording}:NavBarProps) =
           <MeetingRoomIcon sx={{marginRight: '5px'}}/>
           exit</Button>
           : null }
+
+        <IconButton
+          aria-label="new"
+          size={"small"}
+          onClick={handleExitRecorder}
+          sx={{
+            width: '150px',
+            borderRadius: '5px',
+            padding: '8px',
+            background: 'white',
+            color: 'rgba(69,68,68,0.73)',
+            marginRight: '10px',
+            fontFamily: '"Roboto","Helvetica","Arial",sans-serif',
+            fontWeight: '500',
+            fontSize: '0.875rem',
+            lineHeight: '1.75',
+            letterSpacing: '0.02857em',
+            '&:hover': { color: 'black', backgroundColor: 'white' }}
+          }
+        >
+          <Circle sx={{marginRight: '5px'}}/> STOP RECORDER
+        </IconButton>
       </div>
 
     </NavBarWrapper>
