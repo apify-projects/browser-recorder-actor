@@ -13,6 +13,7 @@ import {
 } from '../browser-management/controller'
 import { chromium } from "playwright";
 import logger from "../logger";
+import { Actor } from "apify";
 
 export const router = Router();
 
@@ -26,6 +27,10 @@ router.all('/', (req, res, next) => {
 
 router.get('/serverUrl', (req, res) => {
     return res.send(process.env.APIFY_CONTAINER_URL);
+});
+
+router.get('/stopRecorder', async(req, res) => {
+    await Actor.exit();
 });
 
 /**

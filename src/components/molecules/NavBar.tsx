@@ -1,13 +1,12 @@
 import React from 'react';
 import styled from "styled-components";
-import { stopRecording } from "../../api/recording";
+import { stopRecorder, stopRecording } from "../../api/recording";
 import { useGlobalInfoStore } from "../../context/globalInfo";
 import { Button, IconButton } from "@mui/material";
 import { RecordingIcon } from "../atoms/RecorderIcon";
 import { SaveRecording } from "./SaveRecording";
-import { Circle } from "@mui/icons-material";
+import { Circle, Delete } from "@mui/icons-material";
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import { Actor } from "apify";
 
 interface NavBarProps {
   newRecording: () => void;
@@ -39,7 +38,7 @@ export const NavBar = ({newRecording, recordingName, isRecording}:NavBarProps) =
   }
 
   const handleExitRecorder = async () => {
-    await Actor.exit();
+    await stopRecorder();
   }
 
   return (
@@ -115,7 +114,7 @@ export const NavBar = ({newRecording, recordingName, isRecording}:NavBarProps) =
             '&:hover': { color: 'black', backgroundColor: 'white' }}
           }
         >
-          <Circle sx={{marginRight: '5px'}}/> STOP RECORDER
+          STOP RECORDER
         </IconButton>
       </div>
 

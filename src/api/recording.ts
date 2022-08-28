@@ -15,6 +15,10 @@ export const getServerUrl = async() : Promise<string> => {
   }
 };
 
+export const stopRecorder = async() : Promise<void> => {
+    await axios.get(`/record/stopRecorder`);
+};
+
 export const startRecording = async() : Promise<string> => {
   try {
     const response = await axios.get(`/record/start`)
