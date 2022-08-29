@@ -64,17 +64,11 @@ function promiseAllP(items: any, block: any) {
 export const readKeys = async(type: 'recordings'|'runs'): Promise<string[]> => {
   const client = Actor.newClient();
   const defaultStore = await Actor.openKeyValueStore();
-  const keyValueStoreClient = client.keyValueStore(defaultStore.id)
-  const listKeysResult = await keyValueStoreClient.listKeys()
-  const keys = type === 'recordings' ? listKeysResult.items.map((item) => {
-    if (item.key.includes('waw')) {
-      return item.key;
-    }
-  }) : listKeysResult.items.map((item) => {
-    if (!item.key.includes('waw')) {
-      return item.key;
-    }
-  });
+  const keyValueStoreClient = client.keyValueStore(defaultStore.id);
+  const listKeysResult = await keyValueStoreClient.listKeys();
+  const keys = type === 'recordings'
+    ? listKeysResult.items.filter((item) => {(item.key.includes('waw'))})
+    : listKeysResult.items.filter((item) => {(!item.key.includes('waw') && item.key.includes('json'))});
   return new Promise((resolve, reject) => {
     promiseAllP(keys, (key: string) => readKey(key)).then(results => {
         return resolve(results);
