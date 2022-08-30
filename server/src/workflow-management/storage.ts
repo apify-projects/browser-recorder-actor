@@ -66,9 +66,10 @@ export const readKeys = async(type: 'recordings'|'runs'): Promise<string[]> => {
   const defaultStore = await Actor.openKeyValueStore();
   const keyValueStoreClient = client.keyValueStore(defaultStore.id);
   const listKeysResult = await keyValueStoreClient.listKeys();
-  const keys = type === 'recordings'
+  const listKeysFilter = type === 'recordings'
     ? listKeysResult.items.filter((item) => {(item.key.includes('waw'))})
     : listKeysResult.items.filter((item) => {(!item.key.includes('waw') && item.key.includes('json'))});
+  const keys = listKeysFilter.map((item) => item.key);
   return new Promise((resolve, reject) => {
     promiseAllP(keys, (key: string) => readKey(key)).then(results => {
         return resolve(results);
